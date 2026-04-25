@@ -90,7 +90,7 @@ This creates the fundamental tension that drives system evolution.
 - Logistics: Pivot moment — Can recover OR accelerate into chaos
 - Action: Monitor next 12 hours, provide recovery opportunity
 
-**Stage 8 — FALSE HELL**
+**Stage 8 — Illusion of Permanence**
 - Tension: 80%
 - **Compressed tension + False permanence = TRAP STATE**
 - Logistics: Appears on-time but has ZERO safety margin
@@ -109,16 +109,16 @@ Each stage maps to a geometric form and digital root (0-9):
 
 | Stage | Name | Geometry | Digital Root | Tension |
 |-------|------|----------|--------------|---------|
-| 0 | PLENARA | Point | 0 | 0% |
-| 1 | PRIMA MATERIA | Line | 1 | 10% |
-| 2 | FORMATION | Plane | 2 | 20% |
-| 3 | EMERGENCE OF COMPLEXITY | Cube | 3 | 30% |
-| 4 | CREATIVE EXPANSION | Tesseract | 4 | 40% |
-| 5 | THE THRESHOLD | Pentagonal Symmetry | 5 | 50% |
-| 6 | CATALYZED TENSION | Hexagon | 6 | 60% |
-| 7 | THE CRUCIBLE | Heptagon | 7 | 70% |
-| 8 | FALSE HELL | Octagon | 8 | 80% |
-| 9 | TRANSPARENCY OF THE GUIDE | Enneagon | 9 | 90% |
+| 0 | PLENARA | Point | 0 | 0% | Even |
+| 1 | SPARK OF NAVIGATION | Line | 1 | 10% | Odd |
+| 2 | FORGE OF POLARITY | Plane | 2 | 20% | Even |
+| 3 | ENGINE OF EXPRESSION | Cube | 3 | 30% | Odd |
+| 4 | CRUCIBLE OF EQUILIBRIUM | Tesseract | 4 | 40% | Even |
+| 5 | DYNAMO OF WILL | Pentagonal Symmetry | 5 | 50% | Odd |
+| 6 | NEXUS OF HARMONY | Hexagon | 6 | 60% | Even |
+| 7 | LENS OF DISTILLATION | Heptagon | 7 | 70% | Odd |
+| 8 | VESSEL OF GROUNDING | Octagon | 8 | 80% | Even |
+| 9 | TRANSPARENCY OF THE GUIDE | Enneagon | 9 | 90% | Odd |
 
 ---
 
@@ -272,7 +272,7 @@ Score 65-79 → Stage 3 (Growth complexity)
 Score 50-64 → Stage 4-5 (Expansion/Threshold)
 Score 35-49 → Stage 6 (Catalyzed tension)
 Score 25-34 → Stage 7 (Crucible)
-Score 15-24 → Stage 8 (FALSE HELL - TRAP)
+Score 15-24 → Stage 8 (VESSEL OF GROUNDING - Illusion of Permanence - TRAP - 1.45× amplifier)
 Score < 15 → Stage 9 (CATASTROPHIC)
 ```
 
@@ -301,11 +301,33 @@ ELSE:
 **Contact:** LuminarkMeridian@gmail.com  
 **Location:** St. Petersburg, FL
 
-### Related Work
-- **LUMINARK OVERWATCH PRIME** — Grid stability prediction using SAP framework
-- **SAP v3.0** — Complete 10-stage mathematical model with Ω-9 engine integration
-- **The Healing Cycle** — SAP application to trauma recovery and developmental psychology
-- **PinWay** — PIN-based payment delivery system with SAP security architecture
+### Constitutional Directives (v8.2.0)
+
+**Canonical Stage Names (Non-Negotiable):**
+All stages must use exact canonical names as defined in LUMINARK Suite v8.2.0. Abbreviations, truncations, or alterations are prohibited without explicit authorization.
+
+**Tumbling Inversion Principle:**
+- **Even Stages (0, 2, 4, 6, 8):** Physically Stable / Consciously Unstable
+- **Odd Stages (1, 3, 5, 7, 9):** Physically Unstable / Consciously Stable
+
+**Stage 8 Specifications:**
+- **Canonical Name:** VESSEL OF GROUNDING
+- **Phenomenological Character:** Illusion of Permanence (Crystallization Paradox)
+- **Amplifier:** 1.45× applied to tension calculations
+- **Logistics Translation:** False stability masking zero safety margin
+- **Outcomes:** Graceful Dissolution (Ascending Arc) vs. Shattering (Descending Arc)
+
+**Stage 5 Gateway (Middle Path):**
+- **Canonical Name:** DYNAMO OF WILL
+- **Function:** Critical bifurcation point
+- **Arc Direction:** Determines ascending (recovery) vs. descending (chaos) trajectory
+
+### Related Work (LUMINARK Suite v8.2.0)
+- **090LuminarkHybridEngine090** — Core engine with Tumbling Inversion Principle and Stage 6-8 classifiers
+- **LuminarkCodeWriter090** — Governance layer with SAP Psychiatrist and Constitutional Directives
+- **Anubis090** — Portfolio intelligence platform with Stage 8 Illusion of Permanence detection
+- **LuminarkStage5_090** — KAIROS frontend with Constitutional Directives enforcement
+- **AxiomYield** — Logistics intelligence platform (this repository)
 
 ---
 
