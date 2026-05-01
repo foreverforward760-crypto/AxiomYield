@@ -69,7 +69,7 @@ export default function ELDPulseRing({ physical, conscious, stage, isEvasive }) 
       ctx.setLineDash([]); // reset dash
     }
 
-    // ── Stage 8 FALSE HELL indicator (solid red outer ring) ───────────────
+    // ── Stage 8 Illusion of Permanence indicator (solid red outer ring) ───────────────
     if (stage === 8) {
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius + 8, 0, 2 * Math.PI);
@@ -143,7 +143,7 @@ export default function ELDPulseRing({ physical, conscious, stage, isEvasive }) 
       {/* Stage 8 trap warning */}
       {stage === 8 && !isEvasive && (
         <span className="text-[#ff6b35] text-xs font-semibold tracking-wide">
-          False Hell — Do Not Dispatch
+          Illusion of Permanence — Do Not Dispatch
         </span>
       )}
     </div>

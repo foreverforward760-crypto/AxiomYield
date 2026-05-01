@@ -14,7 +14,7 @@ SAP STAGE → LOGISTICS TRANSLATION:
     Stage 5    : Threshold — monitor closely, pivot point
     Stage 6    : Adaptive stress — compensating, watch
     Stage 7    : Crisis trajectory — INTERVENE NOW
-    Stage 8    : FALSE HELL trap — appears stable, failure imminent
+    Stage 8    : Illusion of Permanence (Crystallization Paradox) — appears stable, failure imminent
     Stage 9    : Catastrophic release — immediate load recovery
 """
 
@@ -95,7 +95,7 @@ def _trap_detection(nsdt: NSDTVector, stage: SAPStage) -> tuple:
     if stage == SAPStage.FALSE_HELL:
         # Stage 8: high stability + high tension = false permanence
         if nsdt.stability >= 7.0 and nsdt.tension >= 6.0 and nsdt.adaptability <= 3.0:
-            return True, "Stage 8 False Hell: system appears stable but has zero adaptive capacity — failure within 24-48h"
+            return True, "Stage 8 Illusion of Permanence: system appears stable but has zero adaptive capacity — failure within 24-48h"
         return True, "Stage 8: structural trap active — do not assign high-value loads"
 
     if stage == SAPStage.TRANSPARENCY:
