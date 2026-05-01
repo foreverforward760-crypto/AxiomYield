@@ -87,9 +87,9 @@ export default function ELDPulseRing({ physical, conscious, stage, isEvasive }) 
 
     // Sub-label: stage name abbreviation
     const stageNames = [
-      'VOID', 'PRIMA', 'FORM', 'EMERGE',
-      'EXPAND', 'THRESH', 'CATAL', 'CRUCIBLE',
-      'F-HELL', 'TRANS'
+      'PLENARA', 'SPARK', 'FORGE', 'ENGINE',
+      'CRUCIBLE', 'DYNAMO', 'NEXUS', 'LENS',
+      'VESSEL', 'GUIDE'
     ];
     ctx.font         = '10px Rajdhani, sans-serif';
     ctx.fillStyle    = stage >= 7 ? '#ff3366' : '#8b949e';

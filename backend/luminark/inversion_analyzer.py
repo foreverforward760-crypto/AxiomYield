@@ -28,15 +28,15 @@ from backend.luminark.nsdt_calculator import NSDTVector
 
 class SAPStage(int, Enum):
     PLENARA            = 0
-    PRIMA_MATERIA      = 1
-    FORMATION          = 2
-    EMERGENCE          = 3
-    CREATIVE_EXPANSION = 4
-    THRESHOLD          = 5
-    CATALYZED_TENSION  = 6
-    CRUCIBLE           = 7
-    FALSE_HELL         = 8
-    TRANSPARENCY       = 9
+    SPARK_OF_NAVIGATION    = 1
+    FORGE_OF_POLARITY      = 2
+    ENGINE_OF_EXPRESSION   = 3
+    CRUCIBLE_OF_EQUILIBRIUM = 4
+    DYNAMO_OF_WILL         = 5
+    NEXUS_OF_HARMONY       = 6
+    LENS_OF_DISTILLATION   = 7
+    VESSEL_OF_GROUNDING    = 8
+    TRANSPARENCY_OF_THE_GUIDE = 9
 
 
 # Canonical stage centroids (5D: C, S, T, A, Coh) — from LUMINARK v6.5
@@ -92,16 +92,16 @@ def _trap_detection(nsdt: NSDTVector, stage: SAPStage) -> tuple:
     Detect SAP trap states (Stages 7, 8, 9 in logistics context).
     Returns (is_trap, reason).
     """
-    if stage == SAPStage.FALSE_HELL:
+    if stage == SAPStage.VESSEL_OF_GROUNDING:
         # Stage 8: high stability + high tension = false permanence
         if nsdt.stability >= 7.0 and nsdt.tension >= 6.0 and nsdt.adaptability <= 3.0:
             return True, "Stage 8 Illusion of Permanence: system appears stable but has zero adaptive capacity — failure within 24-48h"
         return True, "Stage 8: structural trap active — do not assign high-value loads"
 
-    if stage == SAPStage.TRANSPARENCY:
+    if stage == SAPStage.TRANSPARENCY_OF_THE_GUIDE:
         return True, "Stage 9: catastrophic release imminent — immediate load recovery required"
 
-    if stage == SAPStage.CRUCIBLE:
+    if stage == SAPStage.LENS_OF_DISTILLATION:
         if nsdt.tension >= 7.5 and nsdt.adaptability <= 2.5:
             return True, "Stage 7 URI pattern: tension spike + collapsed adaptability — INTERVENE NOW"
 
@@ -109,19 +109,19 @@ def _trap_detection(nsdt: NSDTVector, stage: SAPStage) -> tuple:
 
 
 def _recommended_action(stage: SAPStage, is_trap: bool, nsdt: NSDTVector) -> str:
-    if stage == SAPStage.TRANSPARENCY:
+    if stage == SAPStage.TRANSPARENCY_OF_THE_GUIDE:
         return "EMERGENCY: Trigger immediate load recovery protocol. Do not dispatch."
-    if stage == SAPStage.FALSE_HELL or (is_trap and stage == SAPStage.CRUCIBLE):
+    if stage == SAPStage.VESSEL_OF_GROUNDING or (is_trap and stage == SAPStage.LENS_OF_DISTILLATION):
         return "CRITICAL: Do not assign high-value or time-sensitive loads. Escalate to safety review."
-    if stage == SAPStage.CRUCIBLE:
+    if stage == SAPStage.LENS_OF_DISTILLATION:
         return "URGENT: Reduce load complexity. Check in with driver every 30 minutes."
-    if stage == SAPStage.CATALYZED_TENSION:
+    if stage == SAPStage.NEXUS_OF_HARMONY:
         return "WATCH: Monitor closely. Assign lighter loads. Flag for next check-in."
-    if stage == SAPStage.THRESHOLD:
+    if stage == SAPStage.DYNAMO_OF_WILL:
         return "CAUTION: Pivot point reached. Verify driver willingness to continue. Offer rest option."
-    if stage in (SAPStage.CREATIVE_EXPANSION, SAPStage.EMERGENCE):
+    if stage in (SAPStage.CRUCIBLE_OF_EQUILIBRIUM, SAPStage.ENGINE_OF_EXPRESSION):
         return "ROUTINE: Standard assignment. Schedule next check-in per protocol."
-    if stage in (SAPStage.FORMATION, SAPStage.PRIMA_MATERIA):
+    if stage in (SAPStage.FORGE_OF_POLARITY, SAPStage.SPARK_OF_NAVIGATION):
         return "OPTIMIZE: Driver underutilized. Consider additional loads or reposition."
     if stage == SAPStage.PLENARA:
         return "RESERVE: Driver in rest/reset cycle. Do not dispatch until Stage 1+."
