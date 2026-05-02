@@ -20,6 +20,13 @@ from pydantic import BaseModel, Field
 
 from backend.luminark.nsdt_calculator import NSDTBuilder
 from backend.luminark.inversion_analyzer import InversionAnalyzer
+from backend.luminark.sap_energy_layer import (
+    SAPStage,
+    evaluate_trap,
+    evaluate_vessel_of_grounding_trap,
+    evaluate_dynamo_of_will_bifurcation,
+)
+from backend.luminark.sap_signal_translator import build_api_response
 from backend.eld.connectors import ELDClient
 
 router = APIRouter()
@@ -112,34 +119,34 @@ async def calculate_yield(request: YieldRequest):
     # 3. Run SAP engine — stage classification + trap detection
     state = InversionAnalyzer.compute_stage(nsdt)
 
-    # 4. Axiom Yield Score
-    #
-    # FIX [8,9]: Original formula used [0,100] scale but LUMINARK uses [0,10].
-    # nsdt.tension and nsdt.coherence are both in [0,10].
-    # Normalised here: tension_pct = tension * 10, coherence_norm = coherence / 10
-    #
-    # Formula: (100 - tension_pct) * coherence_norm * trap_penalty
-    #   - High tension reduces score
-    #   - High coherence improves score
-    #   - Active trap halves the score (safety margin)
-    tension_pct    = nsdt.tension * 10.0           # [0,10] → [0,100]
-    coherence_norm = nsdt.coherence / 10.0         # [0,10] → [0,1]
-    trap_penalty   = 0.5 if state.is_trap else 1.0
+    # 4. Route through energy layer + signal translator
+    #    NSDT values are [0,10] from NSDTBuilder; scale to [0,100] for energy layer
+    nsdt_dict_100 = {
+        "complexity":   nsdt.complexity * 10.0,
+        "stability":    nsdt.stability  * 10.0,
+        "tension":      nsdt.tension    * 10.0,
+        "adaptability": nsdt.adaptability * 10.0,
+        "coherence":    nsdt.coherence  * 10.0,
+    }
+    sap_stage = SAPStage(state.stage.value)
+    trap_result = evaluate_trap(sap_stage, nsdt_dict_100, build="overwatch")
 
-    yield_score = (100.0 - tension_pct) * coherence_norm * trap_penalty
-    yield_score = max(0.0, min(100.0, round(yield_score, 2)))
+    engine_output = {
+        "stage":          trap_result.stage.value,
+        "trap_energy":    trap_result.trap_energy,
+        "stage5_path":    trap_result.path,
+        "stage8_chamber": trap_result.chamber_active,
+    }
+    signal = build_api_response(
+        engine_output,
+        carrier_id=request.carrier_id,
+        build="overwatch",
+    )
 
+    # 5. Merge with operational metadata (ELD status, driver ID, NSDT internals)
     return {
-        "carrier_id":         request.carrier_id,
+        **signal,
         "driver_id":          request.driver_id,
-        "yield_score":        yield_score,
-        "sap_stage":          state.stage.value,
-        "sap_stage_name":     state.stage.name,
-        "is_trap":            state.is_trap,
-        "trap_reason":        state.trap_reason,
-        "recommended_action": state.recommended_action,
-        "physical_stability": state.physical_stability,
-        "conscious_stability": state.conscious_stability,
         "confidence":         state.confidence,
         "eld_status":         eld_status,
         "eld_evasive":        eld_data.get("is_evasive", False),
