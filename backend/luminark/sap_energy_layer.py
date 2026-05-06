@@ -39,6 +39,8 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import Optional
 
+from backend.sap_constants import VESSEL_OF_GROUNDING_TRAP_AMPLIFIER
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Canonical SAP stage enum  (matches sap_signal_translator.STAGE_NAMES)
@@ -147,7 +149,7 @@ def trap_energy(stage: SAPStage, nsdt: dict, build: str = "overwatch") -> float:
     if stage == SAPStage.VESSEL_OF_GROUNDING:
         # Illusion of Permanence Amplifier — 1.45× coefficient on Stage 8
         raw = (2.0 * coh - 1.5 * a + 1.2 * s) / 58.5
-        amplified = raw * 1.45
+        amplified = raw * VESSEL_OF_GROUNDING_TRAP_AMPLIFIER
         return max(0.0, min(1.0, amplified))
 
     if stage == SAPStage.LENS_OF_DISTILLATION:
@@ -206,7 +208,7 @@ def evaluate_vessel_of_grounding_trap(nsdt: dict) -> VesselResult:
 
     # Final trap energy with Illusion of Permanence Amplifier (1.45×)
     raw = (2.0 * coh - 1.5 * a + 1.2 * s) / 58.5
-    energy = max(0.0, min(1.0, raw * 1.45))
+    energy = max(0.0, min(1.0, raw * VESSEL_OF_GROUNDING_TRAP_AMPLIFIER))
 
     return VesselResult(
         trap_energy=round(energy, 4),
