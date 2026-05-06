@@ -1,0 +1,56 @@
+name: Axiom Yield CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: SAP Engine Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          if [ -f backend/requirements.txt ]; then
+            pip install -r backend/requirements.txt
+          fi
+
+      - name: Run SAP engine tests
+        run: pytest tests/ -v --tb=short
+
+  lint-constants:
+    name: Hardcoded Magic Number Guard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Fail if raw 1.45 appears in backend Python
+        run: |
+          # Search backend Python files for raw `* 1.45` or `*1.45`
+          # Allowed only in sap_constants.py where it defines the constant itself
+          HITS=$(grep -rn '\*\s*1\.45\|1\.45\s*\*' backend/ \
+                 --include="*.py" \
+                 --exclude="sap_constants.py" || true)
+          if [ -n "$HITS" ]; then
+            echo "ERROR: Hardcoded 1.45 found in backend code."
+            echo "Use VESSEL_OF_GROUNDING_TRAP_AMPLIFIER from sap_constants.py instead."
+            echo ""
+            echo "$HITS"
+            exit 1
+          fi
+          echo "OK: No hardcoded 1.45 found outside sap_constants.py"
