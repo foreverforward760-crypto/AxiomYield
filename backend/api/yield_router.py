@@ -12,11 +12,14 @@ CORRECTIONS APPLIED (vs submitted document):
 """
 
 import logging
+import os
 import time
 from typing import Optional, Dict, Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel, Field
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from backend.luminark.nsdt_calculator import NSDTBuilder
 from backend.luminark.inversion_analyzer import InversionAnalyzer
@@ -31,6 +34,17 @@ from backend.eld.connectors import ELDClient
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+limiter = Limiter(key_func=get_remote_address)
+
+# ── Auth ──────────────────────────────────────────────────────────────────────
+AXIOM_API_KEY  = os.getenv("AXIOM_API_KEY",  "axiom-key-change-me")
+AXIOM_DEMO_KEY = os.getenv("AXIOM_DEMO_KEY", "axiom-demo-public")
+
+
+def verify_api_key(x_axiom_api_key: Optional[str] = Header(None)) -> str:
+    if x_axiom_api_key not in (AXIOM_API_KEY, AXIOM_DEMO_KEY):
+        raise HTTPException(status_code=401, detail="Invalid or missing X-AXIOM-API-KEY")
+    return x_axiom_api_key
 
 
 # ── Request model ─────────────────────────────────────────────────────────────
@@ -67,7 +81,8 @@ class YieldRequest(BaseModel):
 # ── Endpoint ──────────────────────────────────────────────────────────────────
 
 @router.post("/calculate")
-async def calculate_yield(request: YieldRequest):
+@limiter.limit("60/minute")
+async def calculate_yield(request: Request, body: YieldRequest, api_key: str = Depends(verify_api_key)):
     """
     Calculate Axiom Yield Score for a carrier/driver.
 
@@ -85,17 +100,16 @@ async def calculate_yield(request: YieldRequest):
     eld_data: Dict[str, Any] = {}
     eld_status = "no_eld"
 
-    # 1. Fetch ELD data with graceful fallback to FMCSA averages
-    if request.eld_provider and request.driver_id and request.eld_api_key:
+    if body.eld_provider and body.driver_id and body.eld_api_key:
         try:
-            client   = ELDClient(request.eld_provider, request.eld_api_key)
-            eld_data = await client.get_hos(request.driver_id)
+            client   = ELDClient(body.eld_provider, body.eld_api_key)
+            eld_data = await client.get_hos(body.driver_id)
             eld_status = "live"
-            logger.info(f"ELD live data received for driver {request.driver_id}")
+            logger.info(f"ELD live data received for driver {body.driver_id}")
 
         except NotImplementedError as e:
             logger.warning(
-                f"ELD provider '{request.eld_provider}' not implemented: {e}. "
+                f"ELD provider '{body.eld_provider}' not implemented: {e}. "
                 f"Falling back to FMCSA historicals."
             )
             eld_data   = {"error": "not_implemented", "is_evasive": False}
@@ -103,24 +117,20 @@ async def calculate_yield(request: YieldRequest):
 
         except Exception as e:
             logger.warning(
-                f"ELD connection failed for driver {request.driver_id}: {e}. "
+                f"ELD connection failed for driver {body.driver_id}: {e}. "
                 f"Falling back to FMCSA historicals."
             )
             eld_data   = {"error": "connection_failed", "is_evasive": False}
             eld_status = "degraded_fallback"
 
-    # 2. Build NSDT vector from all available data
     nsdt = NSDTBuilder.from_fmcsa_and_eld(
-        fmcsa_data=request.fmcsa_snapshot.dict(),
-        state_data=request.state_flags.dict(),
+        fmcsa_data=body.fmcsa_snapshot.dict(),
+        state_data=body.state_flags.dict(),
         eld_data=eld_data,
     )
 
-    # 3. Run SAP engine — stage classification + trap detection
     state = InversionAnalyzer.compute_stage(nsdt)
 
-    # 4. Route through energy layer + signal translator
-    #    NSDT values are [0,10] from NSDTBuilder; scale to [0,100] for energy layer
     nsdt_dict_100 = {
         "complexity":   nsdt.complexity * 10.0,
         "stability":    nsdt.stability  * 10.0,
@@ -139,14 +149,13 @@ async def calculate_yield(request: YieldRequest):
     }
     signal = build_api_response(
         engine_output,
-        carrier_id=request.carrier_id,
+        carrier_id=body.carrier_id,
         build="overwatch",
     )
 
-    # 5. Merge with operational metadata (ELD status, driver ID, NSDT internals)
     return {
         **signal,
-        "driver_id":          request.driver_id,
+        "driver_id":          body.driver_id,
         "confidence":         state.confidence,
         "eld_status":         eld_status,
         "eld_evasive":        eld_data.get("is_evasive", False),

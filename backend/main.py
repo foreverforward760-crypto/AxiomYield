@@ -8,16 +8,23 @@ Start with:
 """
 
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from backend.api.yield_router import router as yield_router
 from backend.eld.connectors import ELDClient
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# ── Rate limiter ──────────────────────────────────────────────────────────────
+limiter = Limiter(key_func=get_remote_address)
 
 
 @asynccontextmanager
@@ -40,9 +47,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # tighten to dashboard origin in production
+    allow_origins=[os.getenv("CORS_ORIGIN", "http://localhost:3000")],
     allow_methods=["*"],
     allow_headers=["*"],
 )
