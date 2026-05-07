@@ -23,7 +23,7 @@ from slowapi.util import get_remote_address
 
 from backend.luminark.nsdt_calculator import NSDTBuilder
 from backend.luminark.inversion_analyzer import InversionAnalyzer
-from backend.luminark.sap_energy_layer import (
+from luminark.sap_energy_layer import (
     SAPStage,
     evaluate_trap,
     evaluate_vessel_of_grounding_trap,

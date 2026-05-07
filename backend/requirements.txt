@@ -5,9 +5,8 @@ aiohttp==3.10.5
 python-dotenv==1.0.1
 slowapi>=0.1.9
 
-# ── Canonical luminark engine source ─────────────────────────────────────────
-# backend/luminark/ is a local copy that must stay in sync with LASE core.
-# TODO: Replace local copy with pip install once LASE publishes to PyPI or
-#       private index. Until then, pin to LASE git tag for audit trail:
-#
-# luminark @ git+https://github.com/foreverforward760-crypto/LUMINARK-Axiom-Systems-Engine-LASE-v1.1.git#subdirectory=core
+# ── Canonical luminark engine (LASE v1.1) ─────────────────────────────────────
+# Single source of truth for all SAP constants, energy layer, and stage enums.
+# Replaces the drifted backend/luminark/sap_energy_layer.py local copy.
+# Pin to a specific commit SHA in production for reproducible builds.
+luminark @ git+https://github.com/foreverforward760-crypto/LUMINARK-Axiom-Systems-Engine-LASE-v1.1.git#subdirectory=core

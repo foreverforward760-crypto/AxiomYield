@@ -20,13 +20,13 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install luminark canonical package from LASE
         run: |
-          python -m pip install --upgrade pip
-          pip install pytest
-          if [ -f backend/requirements.txt ]; then
-            pip install -r backend/requirements.txt
-          fi
+          pip install "luminark @ git+https://github.com/foreverforward760-crypto/LUMINARK-Axiom-Systems-Engine-LASE-v1.1.git#subdirectory=core"
+
+      - name: Install app dependencies
+        run: |
+          pip install fastapi uvicorn pydantic aiohttp python-dotenv slowapi pytest
 
       - name: Run SAP engine tests
         run: pytest tests/ -v --tb=short
@@ -41,16 +41,32 @@ jobs:
 
       - name: Fail if raw 1.45 appears in backend Python
         run: |
-          # Search backend Python files for raw `* 1.45` or `*1.45`
-          # Allowed only in sap_constants.py where it defines the constant itself
           HITS=$(grep -rn '\*\s*1\.45\|1\.45\s*\*' backend/ \
                  --include="*.py" \
                  --exclude="sap_constants.py" || true)
           if [ -n "$HITS" ]; then
             echo "ERROR: Hardcoded 1.45 found in backend code."
-            echo "Use VESSEL_OF_GROUNDING_TRAP_AMPLIFIER from sap_constants.py instead."
+            echo "Use VESSEL_OF_GROUNDING_TRAP_AMPLIFIER from luminark.sap_energy_layer"
             echo ""
             echo "$HITS"
             exit 1
           fi
-          echo "OK: No hardcoded 1.45 found outside sap_constants.py"
+          echo "OK: No hardcoded 1.45 found"
+
+  drift-guard:
+    name: Local luminark Copy Guard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Fail if sap_energy_layer.py exists locally (must use pip package)
+        run: |
+          if [ -f "backend/luminark/sap_energy_layer.py" ]; then
+            echo "ERROR: backend/luminark/sap_energy_layer.py must not exist."
+            echo "This file drifts from the canonical LASE package."
+            echo "Use: from luminark.sap_energy_layer import evaluate_trap"
+            exit 1
+          fi
+          echo "OK: No local sap_energy_layer.py copy found"
