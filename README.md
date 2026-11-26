@@ -23,6 +23,12 @@ Some input paths use default or fallback values when live ELD data is unavailabl
 
 No market valuation, customer traction, acquisition value, or financial return is established by this repository.
 
+## Conceptual provenance
+
+The project owner states that the underlying concepts, product idea, and 0-9-0 / SAP framework applications in this repository originated with him. AI systems generated the implementation code and suggested technical mechanisms used to express those concepts. NSDT and the Container Rule were introduced by AI as supporting implementation mechanisms within the owner's framework, not as independent conceptual origins.
+
+This records the project owner's account; it is not a legal determination of copyright ownership, inventorship, or exclusive rights.
+
 ## Technical validation required
 
 Before any real dispatch or safety decision relies on this system, it needs:
