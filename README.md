@@ -39,7 +39,7 @@ Before any real dispatch or safety decision relies on this system, it needs:
 5. Prospective pilot measurement, including false positives and false negatives.
 6. Security review of API authentication, secrets, data retention, and integrations.
 
-The API code contains development/demo key defaults. Those must not be used for a public or customer deployment.
+Authenticated API requests require an explicitly configured `AXIOM_API_KEY` of at least 32 characters. No built-in API or public demo key is provided. An optional `AXIOM_DEMO_KEY` must also be at least 32 characters. Configure secrets outside source control.
 
 ## Patent and ownership status
 
