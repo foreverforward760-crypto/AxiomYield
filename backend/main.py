@@ -40,8 +40,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Axiom Yield Broker",
     description=(
-        "SAP-powered predictive logistics intelligence. "
-        "Detects carrier Stage 8 false-stability traps 24-48h before failure."
+        "Experimental rule-based logistics scoring prototype. "
+        "Predictive performance and early-warning lead time have not been established."
     ),
     version="1.0.0",
     lifespan=lifespan,
