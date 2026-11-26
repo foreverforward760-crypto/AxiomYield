@@ -131,3 +131,35 @@ class TestDeprecatedTerms:
         for label in labels:
             for term in DEPRECATED_STAGE8_TERMS:
                 assert term.lower() not in label.lower()
+
+
+
+def test_api_authentication_fails_closed_without_configured_master_key(monkeypatch):
+    from fastapi import HTTPException
+    from backend.api import yield_router
+
+    monkeypatch.setattr(yield_router, "AXIOM_API_KEY", None)
+    monkeypatch.setattr(yield_router, "AXIOM_DEMO_KEY", None)
+    with pytest.raises(HTTPException) as exc:
+        yield_router.verify_api_key("x" * 40)
+    assert exc.value.status_code == 503
+
+
+def test_api_authentication_rejects_short_configured_key(monkeypatch):
+    from fastapi import HTTPException
+    from backend.api import yield_router
+
+    monkeypatch.setattr(yield_router, "AXIOM_API_KEY", "short")
+    monkeypatch.setattr(yield_router, "AXIOM_DEMO_KEY", None)
+    with pytest.raises(HTTPException) as exc:
+        yield_router.verify_api_key("short")
+    assert exc.value.status_code == 503
+
+
+def test_api_authentication_accepts_explicit_strong_key(monkeypatch):
+    from backend.api import yield_router
+
+    key = "a" * 40
+    monkeypatch.setattr(yield_router, "AXIOM_API_KEY", key)
+    monkeypatch.setattr(yield_router, "AXIOM_DEMO_KEY", None)
+    assert yield_router.verify_api_key(key) == key
