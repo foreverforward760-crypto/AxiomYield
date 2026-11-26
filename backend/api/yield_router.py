@@ -13,6 +13,7 @@ CORRECTIONS APPLIED (vs submitted document):
 
 import logging
 import os
+import secrets
 import time
 from typing import Optional, Dict, Any
 
@@ -37,12 +38,27 @@ logger = logging.getLogger(__name__)
 limiter = Limiter(key_func=get_remote_address)
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
-AXIOM_API_KEY  = os.getenv("AXIOM_API_KEY",  "axiom-key-change-me")
-AXIOM_DEMO_KEY = os.getenv("AXIOM_DEMO_KEY", "axiom-demo-public")
+AXIOM_API_KEY  = os.getenv("AXIOM_API_KEY")
+AXIOM_DEMO_KEY = os.getenv("AXIOM_DEMO_KEY")
 
 
 def verify_api_key(x_axiom_api_key: Optional[str] = Header(None)) -> str:
-    if x_axiom_api_key not in (AXIOM_API_KEY, AXIOM_DEMO_KEY):
+    # No built-in credentials. Authenticated endpoints remain unavailable
+    # until an operator configures a strong key.
+    if not AXIOM_API_KEY or len(AXIOM_API_KEY) < 32:
+        raise HTTPException(
+            status_code=503,
+            detail="API authentication is not configured. Set AXIOM_API_KEY to a random secret of at least 32 characters.",
+        )
+    if AXIOM_DEMO_KEY and len(AXIOM_DEMO_KEY) < 32:
+        raise HTTPException(
+            status_code=503,
+            detail="AXIOM_DEMO_KEY must be at least 32 characters when configured.",
+        )
+    valid_keys = [key for key in (AXIOM_API_KEY, AXIOM_DEMO_KEY) if key]
+    if not x_axiom_api_key or not any(
+        secrets.compare_digest(x_axiom_api_key, key) for key in valid_keys
+    ):
         raise HTTPException(status_code=401, detail="Invalid or missing X-AXIOM-API-KEY")
     return x_axiom_api_key
 
