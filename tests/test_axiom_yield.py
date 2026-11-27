@@ -163,3 +163,47 @@ def test_api_authentication_accepts_explicit_strong_key(monkeypatch):
     monkeypatch.setattr(yield_router, "AXIOM_API_KEY", key)
     monkeypatch.setattr(yield_router, "AXIOM_DEMO_KEY", None)
     assert yield_router.verify_api_key(key) == key
+
+
+
+def test_signal_translator_does_not_claim_unvalidated_failure_timing():
+    from backend.luminark.sap_signal_translator import build_api_response, translate_result
+
+    for stage in range(10):
+        signal = translate_result(
+            stage=stage,
+            trap_energy=0.9,
+            stage5_path="C",
+            stage8_chamber="B",
+        )
+        assert signal.predictive_window_hours is None
+        assert "not independently validated" in signal.assessment_basis.lower()
+
+        response = build_api_response(
+            {
+                "stage": stage,
+                "trap_energy": 0.9,
+                "stage5_path": "C",
+                "stage8_chamber": "B",
+            }
+        )
+        assert response["predictive_window_hours"] is None
+        assert "not independently validated" in response["assessment_basis"].lower()
+
+
+def test_stage_specific_signal_text_does_not_claim_failure_windows():
+    from backend.luminark.sap_signal_translator import translate_result
+
+    cases = [
+        translate_result(5, 0.9, stage5_path="C"),
+        translate_result(8, 0.9, stage8_chamber="A"),
+        translate_result(8, 0.9, stage8_chamber="B"),
+        translate_result(9, 0.9),
+    ]
+    for signal in cases:
+        text = " ".join(
+            [signal.recommended_action, signal.pattern_description, signal.broker_note]
+        ).lower()
+        assert "failure window" not in text
+        assert "hours to failure" not in text
+        assert signal.predictive_window_hours is None
